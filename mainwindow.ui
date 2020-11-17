@@ -6,54 +6,83 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1354</width>
-    <height>842</height>
+    <width>1239</width>
+    <height>769</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QHBoxLayout" name="horizontalLayout">
-    <item>
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="maximumSize">
        <size>
-        <width>300</width>
+        <width>16777215</width>
         <height>16777215</height>
        </size>
       </property>
       <property name="currentIndex">
        <number>0</number>
       </property>
-      <widget class="QWidget" name="stu_tabWidget">
+      <widget class="QWidget" name="tab_1">
        <attribute name="title">
         <string>学生</string>
        </attribute>
-       <layout class="QGridLayout" name="gridLayout">
-        <item row="1" column="0">
-         <widget class="QLabel" name="label_2">
-          <property name="text">
-           <string>姓名:</string>
+       <layout class="QGridLayout" name="gridLayout_6">
+        <item row="0" column="3" rowspan="8">
+         <widget class="QTableWidget" name="tbwStu">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
           </property>
          </widget>
         </item>
-        <item row="6" column="1">
-         <widget class="QPushButton" name="stu_insert_pushButton">
+        <item row="1" column="1">
+         <widget class="QLineEdit" name="leStuName">
           <property name="minimumSize">
            <size>
-            <width>195</width>
-            <height>0</height>
+            <width>0</width>
+            <height>35</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>200</width>
+            <width>195</width>
+            <height>16777215</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QLineEdit" name="leStuBd">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
             <height>35</height>
            </size>
           </property>
+          <property name="maximumSize">
+           <size>
+            <width>195</width>
+            <height>16777215</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="label_3">
           <property name="text">
-           <string>插入</string>
+           <string>性别:</string>
           </property>
          </widget>
         </item>
@@ -65,7 +94,7 @@
          </widget>
         </item>
         <item row="7" column="1">
-         <widget class="QPushButton" name="stu_update_pushButton">
+         <widget class="QPushButton" name="btnStuChg">
           <property name="minimumSize">
            <size>
             <width>195</width>
@@ -83,15 +112,27 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="0">
-         <widget class="QLabel" name="label">
+        <item row="6" column="1">
+         <widget class="QPushButton" name="btnStuIns">
+          <property name="minimumSize">
+           <size>
+            <width>195</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>200</width>
+            <height>35</height>
+           </size>
+          </property>
           <property name="text">
-           <string>学号:</string>
+           <string>插入</string>
           </property>
          </widget>
         </item>
-        <item row="1" column="1">
-         <widget class="QLineEdit" name="stu_sname_lineEdit">
+        <item row="4" column="1">
+         <widget class="QLineEdit" name="leStuDep">
           <property name="minimumSize">
            <size>
             <width>0</width>
@@ -106,8 +147,22 @@
           </property>
          </widget>
         </item>
-        <item row="3" column="1">
-         <widget class="QLineEdit" name="stu_age_lineEdit">
+        <item row="3" column="0">
+         <widget class="QLabel" name="label_4">
+          <property name="text">
+           <string>年龄:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_2">
+          <property name="text">
+           <string>姓名:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QLineEdit" name="leStuNum">
           <property name="minimumSize">
            <size>
             <width>0</width>
@@ -119,18 +174,11 @@
             <width>195</width>
             <height>16777215</height>
            </size>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="0">
-         <widget class="QLabel" name="label_5">
-          <property name="text">
-           <string>所在系:</string>
           </property>
          </widget>
         </item>
         <item row="5" column="1">
-         <widget class="QComboBox" name="stu_money_comboBox">
+         <widget class="QComboBox" name="cbStuSch">
           <property name="minimumSize">
            <size>
             <width>0</width>
@@ -155,10 +203,24 @@
           </item>
          </widget>
         </item>
-        <item row="8" column="1">
-         <spacer name="verticalSpacer">
+        <item row="4" column="0">
+         <widget class="QLabel" name="label_5">
+          <property name="text">
+           <string>所在系:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string>学号:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="2">
+         <spacer name="horizontalSpacer">
           <property name="orientation">
-           <enum>Qt::Vertical</enum>
+           <enum>Qt::Horizontal</enum>
           </property>
           <property name="sizeType">
            <enum>QSizePolicy::Minimum</enum>
@@ -166,71 +228,29 @@
           <property name="sizeHint" stdset="0">
            <size>
             <width>20</width>
-            <height>420</height>
+            <height>20</height>
            </size>
           </property>
          </spacer>
         </item>
-        <item row="2" column="0">
-         <widget class="QLabel" name="label_3">
-          <property name="text">
-           <string>性别:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="0">
-         <widget class="QLabel" name="label_4">
-          <property name="text">
-           <string>年龄:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QLineEdit" name="stu_sno_lineEdit">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>35</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>195</width>
-            <height>16777215</height>
-           </size>
-          </property>
-         </widget>
-        </item>
         <item row="2" column="1">
-         <widget class="QLineEdit" name="stu_sex_lineEdit">
+         <widget class="QComboBox" name="cbStuSex">
           <property name="minimumSize">
            <size>
-            <width>0</width>
+            <width>195</width>
             <height>35</height>
            </size>
           </property>
-          <property name="maximumSize">
-           <size>
-            <width>195</width>
-            <height>16777215</height>
-           </size>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="1">
-         <widget class="QLineEdit" name="stu_dept_lineEdit">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>35</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>195</width>
-            <height>16777215</height>
-           </size>
-          </property>
+          <item>
+           <property name="text">
+            <string>男</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>女</string>
+           </property>
+          </item>
          </widget>
         </item>
        </layout>
@@ -672,16 +692,6 @@
         </item>
        </layout>
       </widget>
-     </widget>
-    </item>
-    <item>
-     <widget class="QTableWidget" name="tableWidget">
-      <property name="minimumSize">
-       <size>
-        <width>1000</width>
-        <height>0</height>
-       </size>
-      </property>
      </widget>
     </item>
    </layout>

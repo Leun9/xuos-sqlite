@@ -1,4 +1,5 @@
-QT       += core gui
+QT      += core gui
+QT      += sql
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -18,12 +19,11 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     main.cpp \
     mainwindow.cpp \
-    sqlite3.c
+  sql.cpp
 
 HEADERS += \
     mainwindow.h \
-    sqlie3.h \
-    sqlite3.h
+    sql.h
 
 FORMS += \
     mainwindow.ui
