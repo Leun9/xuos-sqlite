@@ -24,6 +24,17 @@ public:
 
 private slots:
     void on_btnStuIns_clicked();
+    void on_btnStuDel_clicked();
+    void on_btnStuUpd_clicked();
+    void on_btnCouIns_clicked();
+    void on_btnCouDel_clicked();
+    void on_btnCouUpd_clicked();
+
+    void on_btnGrdIns_clicked();
+
+    void on_btnGrdUpd_clicked();
+
+    void on_btnGrdDel_clicked();
 
 private:
     Ui::MainWindow *ui;
@@ -32,6 +43,16 @@ private:
     int InitDB();
     int DisplayStudents();
     int InsertStudent();
+    int DeleteStudent();
+    int UpdateStudent();
+    int DisplayCourses();
+    int InsertCourse();
+    int DeleteCourse();
+    int UpdateCourse();
+    int DisplayGrades();
+    int InsertGrade();
+    int DeleteGrade();
+    int UpdateGrade();
 };
 
 #endif // MAINWINDOW_H

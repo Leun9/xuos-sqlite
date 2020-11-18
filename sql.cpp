@@ -1,24 +1,26 @@
 
+char sql_open_foreign_key[] = "PRAGMA foreign_keys = ON";
+
 char sql_username[] = "default";
 char sql_passwd[] = "default";
 
 char sql_create_tb_student[] =
 "\
-    create table student( \
+    CREATE TABLE student( \
         Sno TEXT PRIMARY KEY NOT NULL, \
         Sname TEXT NOT NULL, \
         Ssex TEXT NOT NULL, \
         Sbd INT NOT NULL, \
         Sdept TEXT, \
-        Scholarship INT NOT NULL\
+        Scholarship TEXT NOT NULL\
     ) \
 ";
 
 char sql_create_tb_course[] =
 "\
-    create table Course ( \
-        Cno TEXT PRIMARY KEY, \
-        Cname TEXT, \
+    CREATE TABLE course ( \
+        Cno TEXT PRIMARY KEY NOT NULL, \
+        Cname TEXT NOT NULL, \
         Cpno TEXT, \
         Ccredit INT, \
         FOREIGN KEY (Cpno) REFERENCES Course(Cno) \
@@ -27,16 +29,36 @@ char sql_create_tb_course[] =
 
 char sql_create_tb_sc[] =
 "\
-        create table SC( \
-            Sno TEXT, \
-            Cno TEXT, \
+        CREATE TABLE grade( \
+            Sno TEXT NOT NULL, \
+            Cno TEXT NOT NULL, \
             Grade INT, \
-            primary key (Sno, Cno), \
-            FOREIGN KEY (Sno) REFERENCES Student(Sno), \
-            FOREIGN KEY (Cno) REFERENCES Course(Cno) \
+            PRIMARY key (Sno, Cno), \
+            FOREIGN KEY (Sno) REFERENCES student(Sno), \
+            FOREIGN KEY (Cno) REFERENCES course(Cno) \
         ) \
 ";
 
 char sql_select_tb_student[] = "SELECT * FROM student";
 
 char sql_insert_student[] = "INSERT INTO student VALUES(?,?,?,?,?,?)";
+
+char sql_delete_student[] = "DELETE FROM student WHERE sno=?";
+
+char sql_update_student[] = "UPDATE student SET %1 WHERE sno=%2";
+
+char sql_select_tb_course[] = "SELECT * FROM course";
+
+char sql_insert_course[] = "INSERT INTO course VALUES(?,?,?,?)";
+
+char sql_delete_course[] = "DELETE FROM course WHERE cno=?";
+
+char sql_update_course[] = "UPDATE course SET %1 WHERE cno=%2";
+
+char sql_select_tb_grade[] = "SELECT * FROM grade";
+
+char sql_insert_grade[] = "INSERT INTO grade VALUES(?,?,?)";
+
+char sql_delete_grade[] = "DELETE FROM grade WHERE sno=? AND cno=?";
+
+char sql_update_grade[] = "UPDATE grade SET grade=? WHERE sno=? AND cno=?";

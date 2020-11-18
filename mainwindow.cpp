@@ -8,22 +8,47 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    //setWindowState(Qt::WindowMaximized);
     if (InitDB() != 0)
     {
         QMessageBox::warning(this, "错误", "初始化失败，错误信息：" + XUOSDB.lastError().text());
         exit (1);
     }
 
-    /*** 初始化控件 ***/
-    QStringList qstrList({"学号", "姓名", "性别", "出生日期", "院系", "奖学金"});
+    /* 初始化控件 */
+
+    /*** tab student ***/
+    QStringList qstrListStu({"学号", "姓名", "性别", "年龄", "院系", "奖学金"});
     ui->tbwStu->setColumnCount(6);
-    ui->tbwStu->setHorizontalHeaderLabels(qstrList);
+    ui->tbwStu->setHorizontalHeaderLabels(qstrListStu);
     //ui->tbwStu->horizontalHeader()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
     ui->tbwStu->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui->leStuNum->setValidator(new QIntValidator());
+    ui->leStuBd->setValidator(new QIntValidator());
+    ui->leStuNumd->setValidator(new QIntValidator());
 
-    /*** 显示信息 ***/
+    /*** tab course ***/
+    QStringList qstrListCou({"课程号", "课程名", "先行课程", "学分"});
+    ui->tbwCou->setColumnCount(4);
+    ui->tbwCou->setHorizontalHeaderLabels(qstrListCou);
+    ui->tbwCou->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui->leCouNum->setValidator(new QIntValidator());
+    ui->leCouPnum->setValidator(new QIntValidator());
+    ui->leCouCredit->setValidator(new QIntValidator());
+    ui->leCouNumd->setValidator(new QIntValidator());
+
+    /*** tab grade ***/
+    QStringList qstrListGrd({"学号", "课程号", "分数"});
+    ui->tbwGrd->setColumnCount(3);
+    ui->tbwGrd->setHorizontalHeaderLabels(qstrListGrd);
+    ui->tbwGrd->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui->leGrdSno->setValidator(new QIntValidator());
+    ui->leGrdCno->setValidator(new QIntValidator());
+    ui->leGrdGrade->setValidator(new QIntValidator());
+
+    /* 显示信息 */
     DisplayStudents();
+    DisplayCourses();
+    DisplayGrades();
 }
 
 MainWindow::~MainWindow()
@@ -40,6 +65,7 @@ int MainWindow::InitDB() {
     //XUOSDB.setPassword(sql_passwd);
     if (!XUOSDB.open()) return 1;
     QSqlQuery sql_query;
+    sql_query.exec(sql_open_foreign_key);
     sql_query.exec(sql_create_tb_student);
     sql_query.exec(sql_create_tb_course);
     sql_query.exec(sql_create_tb_sc);
@@ -61,26 +87,36 @@ int MainWindow::DisplayStudents() {
     return 0;
 }
 
+#define INS_ERR_RET(errMsg, RETCODE) \
+{ \
+    QMessageBox::warning(this, "错误", QString("插入失败，错误信息：") + errMsg); \
+    return RETCODE; \
+}
+
+#define PAD_SINGLE_QUOTES(x) (QString("'") + x + QString("'"))
+
 int MainWindow::InsertStudent() {
     QSqlQuery sql_query(sql_insert_student);
-    // TODO : 数据合法性检查
+    if (ui->leStuNum->text().length() != 9) INS_ERR_RET("学号长度必须为9", 1);
     sql_query.addBindValue(ui->leStuNum->text());
+    if (ui->leStuName->text().isEmpty()) INS_ERR_RET("姓名不能为空", 1);
     sql_query.addBindValue(ui->leStuName->text());
+    if (ui->cbStuSex->currentText().isEmpty()) INS_ERR_RET("性别不能为空", 1);
     sql_query.addBindValue(ui->cbStuSex->currentText());
+    if (ui->leStuBd->text().isEmpty()) INS_ERR_RET("年龄不能为空", 1);
     sql_query.addBindValue(ui->leStuBd->text());
+    // 系别可以为空
     sql_query.addBindValue(ui->leStuDep->text());
+    if (ui->cbStuSch->currentText().isEmpty()) INS_ERR_RET("奖学金不能为空", 1);
     sql_query.addBindValue(ui->cbStuSch->currentText());
-    if(!sql_query.exec())
-    {
-        QMessageBox::warning(this, "错误", "插入失败，错误信息：" + sql_query.lastError().text());
-        return 1;
-    }
+    if(!sql_query.exec()) INS_ERR_RET(sql_query.lastError().text(), 1);
+
     ui->leStuNum->clear();
     ui->leStuName->clear();
-    //ui->cbStuSex->clear();
+    ui->cbStuSex->setCurrentIndex(0);
     ui->leStuBd->clear();
     ui->leStuDep->clear();
-    //ui->cbStuSch->clear();
+    ui->cbStuSch->setCurrentIndex(0);
     DisplayStudents();
     return 0;
 }
@@ -88,4 +124,227 @@ int MainWindow::InsertStudent() {
 void MainWindow::on_btnStuIns_clicked()
 {
     InsertStudent();
+}
+
+#define DEL_ERR_RET(errMsg, RETCODE) \
+{ \
+    QMessageBox::warning(this, "错误", QString("删除失败，错误信息：") + errMsg); \
+    return RETCODE; \
+}
+
+#define STABAR_SHOW_5000(Msg) {ui->statusbar->showMessage(Msg, 5000);}
+
+int MainWindow::DeleteStudent() {
+    QSqlQuery sql_query(sql_delete_student);
+    sql_query.addBindValue(ui->leStuNumd->text());
+    if (!sql_query.exec()) DEL_ERR_RET(sql_query.lastError().text(), 1);
+    // TODO 状态栏显示是否发生删除
+
+    ui->leStuNumd->clear();
+    DisplayStudents();
+    return 0;
+}
+
+void MainWindow::on_btnStuDel_clicked()
+{
+    DeleteStudent();
+}
+
+#define UPD_ERR_RET(errMsg, RETCODE) \
+{ \
+    QMessageBox::warning(this, "错误", QString("更新失败，错误信息：") + errMsg); \
+    return RETCODE; \
+}
+
+int MainWindow::UpdateStudent() {
+    if (ui->leStuNum->text().isEmpty()) UPD_ERR_RET("学号为空", 1);
+    QString qstr;
+    if (!ui->leStuName->text().isEmpty()) qstr += "Sname=" + PAD_SINGLE_QUOTES(ui->leStuName->text()) + ",";
+    if (!ui->cbStuSex->currentText().isEmpty()) qstr += "Ssex=" + PAD_SINGLE_QUOTES(ui->cbStuSex->currentText()) + ",";
+    if (!ui->leStuBd->text().isEmpty()) qstr += "Sbd=" + ui->leStuBd->text() + ",";
+    if (!ui->leStuDep->text().isEmpty()) qstr += "Sdept=" + PAD_SINGLE_QUOTES(ui->leStuDep->text()) + ",";
+    if (!ui->cbStuSch->currentText().isEmpty()) qstr += "Scholarship=" + PAD_SINGLE_QUOTES(ui->cbStuSch->currentText()) + ",";
+    if (qstr.isEmpty()) UPD_ERR_RET("无更新信息", 1);
+    qstr = qstr.mid(0, qstr.length() - 1);
+    QSqlQuery sql_query(QString(sql_update_student).arg(qstr).arg(ui->leStuNum->text()));
+    if(!sql_query.exec()) UPD_ERR_RET(sql_query.lastError().text(), 1);
+    // TODO 状态栏显示是否发生修改
+
+    ui->leStuNum->clear();
+    ui->leStuName->clear();
+    ui->cbStuSex->setCurrentIndex(0);
+    ui->leStuBd->clear();
+    ui->leStuDep->clear();
+    ui->cbStuSch->setCurrentIndex(0);
+    DisplayStudents();
+    return 0;
+}
+
+void MainWindow::on_btnStuUpd_clicked()
+{
+    UpdateStudent();
+}
+
+int MainWindow::DisplayCourses() {
+    QSqlQuery sql_query(sql_select_tb_course);
+    if (!sql_query.exec()) return 1;
+
+    ui->tbwCou->setRowCount(0);
+    int row = 0;
+    while (sql_query.next()) {
+        ui->tbwCou->insertRow(row);
+        for (int i = 0; i < 4; ++i)
+            ui->tbwCou->setItem(row, i, new QTableWidgetItem(sql_query.value(i).toString()));
+        row++;
+    }
+    return 0;
+}
+
+int MainWindow::InsertCourse() {
+    QSqlQuery sql_query(sql_insert_course);
+    if (ui->leCouNum->text().isEmpty()) INS_ERR_RET("课程号不能为空", 1);
+    sql_query.addBindValue(ui->leCouNum->text());
+    if (ui->leCouName->text().isEmpty()) INS_ERR_RET("课程名不能为空", 1);
+    sql_query.addBindValue(ui->leCouName->text());
+    // 先行课程可以为空
+    sql_query.addBindValue(ui->leCouPnum->text());
+    // 学分可以为空
+    sql_query.addBindValue(ui->leCouCredit->text());
+    if(!sql_query.exec()) INS_ERR_RET(sql_query.lastError().text(), 1);
+
+    ui->leCouNum->clear();
+    ui->leCouName->clear();
+    ui->leCouPnum->clear();
+    ui->leCouCredit->clear();
+    DisplayCourses();
+    return 0;
+}
+
+int MainWindow::DeleteCourse() {
+    QSqlQuery sql_query(sql_delete_course);
+    sql_query.addBindValue(ui->leCouNumd->text());
+    if (!sql_query.exec()) DEL_ERR_RET(sql_query.lastError().text(), 1);
+    // TODO 状态栏显示是否发生删除
+
+    ui->leCouNumd->clear();
+    DisplayCourses();
+    return 0;
+}
+
+void MainWindow::on_btnCouIns_clicked()
+{
+    InsertCourse();
+}
+
+void MainWindow::on_btnCouDel_clicked()
+{
+    DeleteCourse();
+}
+
+int MainWindow::UpdateCourse() {
+    if (ui->leCouNum->text().isEmpty()) UPD_ERR_RET("课程号为空", 1);
+    QString qstr;
+    if (!ui->leCouName->text().isEmpty()) qstr += "Cname=" + PAD_SINGLE_QUOTES(ui->leCouName->text()) + ",";
+    if (!ui->leCouPnum->text().isEmpty()) qstr += "Cpno=" + ui->leCouPnum->text() + ",";
+    if (!ui->leCouCredit->text().isEmpty()) qstr += "Ccredit=" + ui->leCouCredit->text() + ",";
+    if (qstr.isEmpty()) UPD_ERR_RET("无更新信息", 1);
+    qstr = qstr.mid(0, qstr.length() - 1);
+    QSqlQuery sql_query(QString(sql_update_course).arg(qstr).arg(ui->leCouNum->text()));
+    //qDebug() << QString(sql_update_course).arg(qstr).arg(ui->leCouNum->text());
+    if(!sql_query.exec()) UPD_ERR_RET(sql_query.lastError().text(), 1);
+    // TODO 状态栏显示是否发生修改
+
+    ui->leCouNum->clear();
+    ui->leCouName->clear();
+    ui->leCouPnum->clear();
+    ui->leCouCredit->clear();
+    DisplayCourses();
+    return 0;
+}
+
+void MainWindow::on_btnCouUpd_clicked()
+{
+    UpdateCourse();
+}
+
+int MainWindow::DisplayGrades() {
+    QSqlQuery sql_query(sql_select_tb_grade);
+    if (!sql_query.exec()) return 1;
+
+    ui->tbwGrd->setRowCount(0);
+    int row = 0;
+    while (sql_query.next()) {
+        ui->tbwGrd->insertRow(row);
+        for (int i = 0; i < 3; ++i)
+            ui->tbwGrd->setItem(row, i, new QTableWidgetItem(sql_query.value(i).toString()));
+        row++;
+    }
+    return 0;
+}
+
+int MainWindow::InsertGrade() {
+    QSqlQuery sql_query(sql_insert_grade);
+    if (ui->leGrdSno->text().isEmpty()) INS_ERR_RET("学号不能为空", 1);
+    sql_query.addBindValue(ui->leGrdSno->text());
+    if (ui->leGrdCno->text().isEmpty()) INS_ERR_RET("课程号不能为空", 1);
+    sql_query.addBindValue(ui->leGrdCno->text());
+    // 分数可以为空
+    sql_query.addBindValue(ui->leGrdGrade->text());
+    if(!sql_query.exec()) INS_ERR_RET(sql_query.lastError().text(), 1);
+
+    ui->leGrdSno->clear();
+    ui->leGrdCno->clear();
+    ui->leGrdGrade->clear();
+    DisplayGrades();
+    return 0;
+}
+
+
+void MainWindow::on_btnGrdIns_clicked()
+{
+    InsertGrade();
+}
+
+int MainWindow::DeleteGrade() {
+    QSqlQuery sql_query(sql_delete_grade);
+    if (ui->leGrdSno->text().isEmpty()) DEL_ERR_RET("学号不能为空", 1);
+    sql_query.addBindValue(ui->leGrdSno->text());
+    if (ui->leGrdCno->text().isEmpty()) DEL_ERR_RET("课程号不能为空", 1);
+    sql_query.addBindValue(ui->leGrdCno->text());
+    if (!sql_query.exec()) DEL_ERR_RET(sql_query.lastError().text(), 1);
+    // TODO 状态栏显示是否发生删除
+
+    ui->leGrdSno->clear();
+    ui->leGrdCno->clear();
+    ui->leGrdGrade->clear();
+    DisplayGrades();
+    return 0;
+}
+
+int MainWindow::UpdateGrade() {
+    if (ui->leGrdSno->text().isEmpty()) UPD_ERR_RET("学号为空", 1);
+    if (ui->leGrdCno->text().isEmpty()) UPD_ERR_RET("课程号为空", 1);
+    QSqlQuery sql_query(sql_update_grade);
+    sql_query.addBindValue(ui->leGrdGrade->text());
+    sql_query.addBindValue(ui->leGrdSno->text());
+    sql_query.addBindValue(ui->leGrdCno->text());
+    if(!sql_query.exec()) UPD_ERR_RET(sql_query.lastError().text(), 1);
+    // TODO 状态栏显示是否发生修改
+
+    ui->leGrdSno->clear();
+    ui->leGrdCno->clear();
+    ui->leGrdGrade->clear();
+    DisplayGrades();
+    return 0;
+
+}
+
+void MainWindow::on_btnGrdUpd_clicked()
+{
+    UpdateGrade();
+}
+
+void MainWindow::on_btnGrdDel_clicked()
+{
+    DeleteGrade();
 }
