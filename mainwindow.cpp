@@ -45,6 +45,19 @@ MainWindow::MainWindow(QWidget *parent)
     ui->leGrdCno->setValidator(new QIntValidator());
     ui->leGrdGrade->setValidator(new QIntValidator());
 
+    /*** tab stuinfo ***/
+    QStringList qstrListSInfo1({"学号", "姓名", "性别", "年龄", "院系", "奖学金"});
+    ui->tbwStuInfo1->setColumnCount(6);
+    ui->tbwStuInfo1->setRowCount(1);
+    ui->tbwStuInfo1->setHorizontalHeaderLabels(qstrListSInfo1);
+    ui->tbwStuInfo1->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui->tbwStuInfo1->horizontalHeader()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
+    QStringList qstrListSInfo2({"课程号", "课程名", "先行课程", "学分", "成绩"});
+    ui->tbwStuInfo2->setColumnCount(5);
+    ui->tbwStuInfo2->setHorizontalHeaderLabels(qstrListSInfo2);
+    ui->tbwStuInfo2->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui->leStuInfo->setValidator(new QIntValidator());
+
     /* 显示信息 */
     DisplayStudents();
     DisplayCourses();
@@ -347,4 +360,41 @@ void MainWindow::on_btnGrdUpd_clicked()
 void MainWindow::on_btnGrdDel_clicked()
 {
     DeleteGrade();
+}
+
+#define QUERY_ERR_RET(errMsg, RETCODE) \
+{ \
+    QMessageBox::warning(this, "错误", QString("查询失败，错误信息：") + errMsg); \
+    return RETCODE; \
+}
+
+int MainWindow::GetStuInfo() {
+    if (ui->leStuInfo->text().isEmpty()) UPD_ERR_RET("学号为空", 1);
+    QSqlQuery sql_query(sql_stu_info1);
+    sql_query.addBindValue(ui->leStuInfo->text());
+    if (!sql_query.exec()) QUERY_ERR_RET(sql_query.lastError().text(), 1);
+    if (!sql_query.next()) {
+        QMessageBox::information(this, "信息", "查无此人");
+        return 0;
+    }
+    for (int i = 0; i < 6; ++i)
+        ui->tbwStuInfo1->setItem(0, i, new QTableWidgetItem(sql_query.value(i).toString()));
+    sql_query.prepare(sql_stu_info2);
+    sql_query.addBindValue(ui->leStuInfo->text());
+    sql_query.addBindValue(ui->leStuInfo->text());
+    if (!sql_query.exec()) QUERY_ERR_RET(sql_query.lastError().text(), 1);
+    ui->tbwStuInfo2->setRowCount(0);
+    int row = 0;
+    while (sql_query.next()) {
+        ui->tbwStuInfo2->insertRow(row);
+        for (int i = 0; i < 5; ++i)
+            ui->tbwStuInfo2->setItem(row, i, new QTableWidgetItem(sql_query.value(i).toString()));
+        row++;
+    }
+    return 0;
+}
+
+void MainWindow::on_btnStuInfo_clicked()
+{
+    GetStuInfo();
 }

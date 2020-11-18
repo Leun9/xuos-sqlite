@@ -29,12 +29,10 @@ private slots:
     void on_btnCouIns_clicked();
     void on_btnCouDel_clicked();
     void on_btnCouUpd_clicked();
-
     void on_btnGrdIns_clicked();
-
     void on_btnGrdUpd_clicked();
-
     void on_btnGrdDel_clicked();
+    void on_btnStuInfo_clicked();
 
 private:
     Ui::MainWindow *ui;
@@ -53,6 +51,7 @@ private:
     int InsertGrade();
     int DeleteGrade();
     int UpdateGrade();
+    int GetStuInfo();
 };
 
 #endif // MAINWINDOW_H

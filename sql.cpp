@@ -62,3 +62,12 @@ char sql_insert_grade[] = "INSERT INTO grade VALUES(?,?,?)";
 char sql_delete_grade[] = "DELETE FROM grade WHERE sno=? AND cno=?";
 
 char sql_update_grade[] = "UPDATE grade SET grade=? WHERE sno=? AND cno=?";
+
+char sql_stu_info1[] = "SELECT * FROM student WHERE sno=?";
+
+char sql_stu_info2[] =
+"\
+    SELECT y.cno, cname, cpno, ccredit, grade \
+    FROM student x, course y, grade z \
+    WHERE x.sno=? AND z.sno=? AND y.cno=z.cno \
+";

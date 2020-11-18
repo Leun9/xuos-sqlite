@@ -30,11 +30,11 @@
        </size>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="tab_1">
        <attribute name="title">
-        <string>学生</string>
+        <string>学生表</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_8">
         <item row="0" column="2" rowspan="4">
@@ -390,9 +390,9 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="course_tabWidget">
+      <widget class="QWidget" name="tab_2">
        <attribute name="title">
-        <string>课程</string>
+        <string>课程表</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_2">
         <item row="4" column="0">
@@ -720,9 +720,9 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="grade_tabWidget">
+      <widget class="QWidget" name="tab_3">
        <attribute name="title">
-        <string>成绩</string>
+        <string>成绩表</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_3">
         <item row="0" column="0">
@@ -920,88 +920,18 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="all_tabWidget">
+      <widget class="QWidget" name="tab_4">
        <attribute name="title">
-        <string>综合</string>
+        <string>学生信息查询</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout">
-        <item>
-         <widget class="QGroupBox" name="groupBox">
-          <property name="title">
-           <string>按系统计</string>
-          </property>
-          <layout class="QGridLayout" name="gridLayout_4">
-           <item row="0" column="0">
-            <widget class="QLabel" name="label_14">
-             <property name="text">
-              <string>系名:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <widget class="QLineEdit" name="all_dept_lineEdit">
-             <property name="minimumSize">
-              <size>
-               <width>0</width>
-               <height>35</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>195</width>
-               <height>35</height>
-              </size>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1">
-            <widget class="QPushButton" name="all_dept_sti_pushButton">
-             <property name="minimumSize">
-              <size>
-               <width>0</width>
-               <height>35</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>195</width>
-               <height>35</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>统计</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="1">
-            <widget class="QPushButton" name="all_dept_ord_pushButton">
-             <property name="minimumSize">
-              <size>
-               <width>0</width>
-               <height>35</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>195</width>
-               <height>35</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>排名</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item>
+       <layout class="QGridLayout" name="gridLayout_4">
+        <item row="0" column="0" rowspan="2">
          <widget class="QGroupBox" name="groupBox_2">
           <property name="title">
-           <string>学生信息查询</string>
+           <string/>
           </property>
           <layout class="QGridLayout" name="gridLayout_5">
-           <item row="0" column="0">
+           <item row="1" column="0">
             <widget class="QLabel" name="label_15">
              <property name="text">
               <string>学号:</string>
@@ -1009,23 +939,36 @@
             </widget>
            </item>
            <item row="0" column="1">
-            <widget class="QLineEdit" name="all_stu_lineEdit">
-             <property name="minimumSize">
+            <spacer name="verticalSpacer_5">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
               <size>
-               <width>0</width>
-               <height>35</height>
+               <width>20</width>
+               <height>40</height>
               </size>
              </property>
-             <property name="maximumSize">
-              <size>
-               <width>195</width>
-               <height>35</height>
-              </size>
-             </property>
-            </widget>
+            </spacer>
            </item>
-           <item row="1" column="1">
-            <widget class="QPushButton" name="all_stu_pushButton">
+           <item row="4" column="0" colspan="3">
+            <widget class="QTableWidget" name="tbwStuInfo1"/>
+           </item>
+           <item row="2" column="2">
+            <spacer name="horizontalSpacer_17">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item row="2" column="1">
+            <widget class="QPushButton" name="btnStuInfo">
              <property name="minimumSize">
               <size>
                <width>0</width>
@@ -1043,18 +986,66 @@
              </property>
             </widget>
            </item>
+           <item row="1" column="1">
+            <widget class="QLineEdit" name="leStuInfo">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>35</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>195</width>
+               <height>35</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <spacer name="verticalSpacer_4">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item row="2" column="0">
+            <spacer name="horizontalSpacer_16">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
           </layout>
          </widget>
         </item>
-        <item>
-         <spacer name="verticalSpacer_4">
+        <item row="0" column="2">
+         <widget class="QTableWidget" name="tbwStuInfo2"/>
+        </item>
+        <item row="0" column="1">
+         <spacer name="horizontalSpacer_18">
           <property name="orientation">
-           <enum>Qt::Vertical</enum>
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Minimum</enum>
           </property>
           <property name="sizeHint" stdset="0">
            <size>
             <width>20</width>
-            <height>463</height>
+            <height>20</height>
            </size>
           </property>
          </spacer>
