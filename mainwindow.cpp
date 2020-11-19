@@ -58,10 +58,22 @@ MainWindow::MainWindow(QWidget *parent)
     ui->tbwStuInfo2->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     ui->leStuInfo->setValidator(new QIntValidator());
 
+    /*** tab gradeSummary ***/
+    QStringList qstrListSum({"系别", "平均分", "最高分", "最低分", "优秀率", "不及格人数"});
+    ui->tbwSum1->setColumnCount(6);
+    ui->tbwSum1->setRowCount(1);
+    ui->tbwSum1->setHorizontalHeaderLabels(qstrListSum);
+    ui->tbwSum1->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    //ui->tbwSum1->horizontalHeader()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
+    ui->tbwSum2->setColumnCount(6);
+    ui->tbwSum2->setHorizontalHeaderLabels(qstrListSum);
+    ui->tbwSum2->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+
     /* 显示信息 */
     DisplayStudents();
     DisplayCourses();
     DisplayGrades();
+    DisplaySummarys();
 }
 
 MainWindow::~MainWindow()
@@ -131,6 +143,7 @@ int MainWindow::InsertStudent() {
     ui->leStuDep->clear();
     ui->cbStuSch->setCurrentIndex(0);
     DisplayStudents();
+    DisplaySummarys();
     return 0;
 }
 
@@ -155,6 +168,7 @@ int MainWindow::DeleteStudent() {
 
     ui->leStuNumd->clear();
     DisplayStudents();
+    DisplaySummarys();
     return 0;
 }
 
@@ -190,6 +204,7 @@ int MainWindow::UpdateStudent() {
     ui->leStuDep->clear();
     ui->cbStuSch->setCurrentIndex(0);
     DisplayStudents();
+    DisplaySummarys();
     return 0;
 }
 
@@ -230,6 +245,7 @@ int MainWindow::InsertCourse() {
     ui->leCouPnum->clear();
     ui->leCouCredit->clear();
     DisplayCourses();
+    DisplaySummarys();
     return 0;
 }
 
@@ -241,6 +257,7 @@ int MainWindow::DeleteCourse() {
 
     ui->leCouNumd->clear();
     DisplayCourses();
+    DisplaySummarys();
     return 0;
 }
 
@@ -272,6 +289,7 @@ int MainWindow::UpdateCourse() {
     ui->leCouPnum->clear();
     ui->leCouCredit->clear();
     DisplayCourses();
+    DisplaySummarys();
     return 0;
 }
 
@@ -309,6 +327,7 @@ int MainWindow::InsertGrade() {
     ui->leGrdCno->clear();
     ui->leGrdGrade->clear();
     DisplayGrades();
+    DisplaySummarys();
     return 0;
 }
 
@@ -331,6 +350,7 @@ int MainWindow::DeleteGrade() {
     ui->leGrdCno->clear();
     ui->leGrdGrade->clear();
     DisplayGrades();
+    DisplaySummarys();
     return 0;
 }
 
@@ -348,6 +368,7 @@ int MainWindow::UpdateGrade() {
     ui->leGrdCno->clear();
     ui->leGrdGrade->clear();
     DisplayGrades();
+    DisplaySummarys();
     return 0;
 
 }
@@ -369,7 +390,7 @@ void MainWindow::on_btnGrdDel_clicked()
 }
 
 int MainWindow::GetStuInfo() {
-    if (ui->leStuInfo->text().isEmpty()) UPD_ERR_RET("学号为空", 1);
+    if (ui->leStuInfo->text().isEmpty()) QUERY_ERR_RET("学号为空", 1);
     QSqlQuery sql_query(sql_stu_info1);
     sql_query.addBindValue(ui->leStuInfo->text());
     if (!sql_query.exec()) QUERY_ERR_RET(sql_query.lastError().text(), 1);
@@ -397,4 +418,47 @@ int MainWindow::GetStuInfo() {
 void MainWindow::on_btnStuInfo_clicked()
 {
     GetStuInfo();
+}
+
+int MainWindow::DisplaySummarys() {
+    QSqlQuery sql_query(sql_grade_summary1);
+    if (!sql_query.exec()) return 1;
+    ui->tbwSum2->setRowCount(0);
+    int row = 0;
+    while (sql_query.next()) {
+        ui->tbwSum2->insertRow(row);
+        ui->tbwSum2->setItem(row, 0, new QTableWidgetItem(sql_query.value(0).toString()));
+        if (sql_query.value(6).toInt() == 0) continue;
+        ui->tbwSum2->setItem(row, 1, new QTableWidgetItem(QString::number(sql_query.value(1).toDouble(), 'f', 2)));
+        ui->tbwSum2->setItem(row, 2, new QTableWidgetItem(sql_query.value(2).toString()));
+        ui->tbwSum2->setItem(row, 3, new QTableWidgetItem(sql_query.value(3).toString()));
+        ui->tbwSum2->setItem(row, 4, new QTableWidgetItem(QString::number(sql_query.value(4).toDouble()*100, 'f', 1) + "%"));
+        ui->tbwSum2->setItem(row, 5, new QTableWidgetItem(sql_query.value(5).toString()));
+        row++;
+    }
+    return 0;
+}
+
+int MainWindow::GetDepSummary() {
+    if (ui->leSum->text().isEmpty()) QUERY_ERR_RET("系别为空", 1);
+    int found = -1;
+    for (int i = 0; i < ui->tbwSum2->rowCount(); ++i) {
+        if (ui->leSum->text() == ui->tbwSum2->item(i, 0)->text()) {
+            found = i;
+            break;
+        }
+    }
+    if (found == -1) {
+        QMessageBox::information(this, "信息", "系别不存在");
+        return 0;
+    }
+    for (int i = 0; i < 6; ++i)
+        ui->tbwSum1->setItem(0, i, new QTableWidgetItem(*ui->tbwSum2->item(found, i)));
+
+    return 0;
+}
+
+void MainWindow::on_btnSum_clicked()
+{
+    GetDepSummary();
 }

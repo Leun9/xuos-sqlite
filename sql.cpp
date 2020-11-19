@@ -71,3 +71,15 @@ char sql_stu_info2[] =
     FROM student x, course y, grade z \
     WHERE x.sno=? AND z.sno=? AND y.cno=z.cno \
 ";
+
+char sql_grade_summary1[] =
+"\
+    SELECT sdept, AVG(grade), MAX(grade), MIN(grade), \
+        COUNT(case when grade>90 then 1 else NULL end)*1.00 / COUNT(grade) p, \
+        COUNT(DISTINCT case when grade<60 then x.sno else NULL end) q, \
+        COUNT(grade) \
+    FROM student x LEFT OUTER JOIN grade y \
+    ON x.sno=y.sno \
+    GROUP BY Sdept \
+";
+

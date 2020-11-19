@@ -34,6 +34,8 @@ private slots:
     void on_btnGrdDel_clicked();
     void on_btnStuInfo_clicked();
 
+    void on_btnSum_clicked();
+
 private:
     Ui::MainWindow *ui;
     QSqlDatabase database_;
@@ -52,6 +54,8 @@ private:
     int DeleteGrade();
     int UpdateGrade();
     int GetStuInfo();
+    int DisplaySummarys();
+    int GetDepSummary();
 };
 
 #endif // MAINWINDOW_H

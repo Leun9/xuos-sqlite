@@ -25,8 +25,9 @@ extern char sql_insert_grade[];
 extern char sql_delete_grade[];
 extern char sql_update_grade[];
 
-extern char sql_dep_summary[];
 extern char sql_stu_info1[];
 extern char sql_stu_info2[];
+
+extern char sql_grade_summary1[];
 
 #endif // SQL_H
