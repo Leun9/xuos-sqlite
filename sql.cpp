@@ -29,14 +29,14 @@ char sql_create_tb_course[] =
 
 char sql_create_tb_sc[] =
 "\
-        CREATE TABLE grade( \
-            Sno TEXT NOT NULL, \
-            Cno TEXT NOT NULL, \
-            Grade INT, \
-            PRIMARY key (Sno, Cno), \
-            FOREIGN KEY (Sno) REFERENCES student(Sno), \
-            FOREIGN KEY (Cno) REFERENCES course(Cno) \
-        ) \
+    CREATE TABLE grade( \
+        Sno TEXT NOT NULL, \
+        Cno TEXT NOT NULL, \
+        Grade INT, \
+        PRIMARY key (Sno, Cno), \
+        FOREIGN KEY (Sno) REFERENCES student(Sno), \
+        FOREIGN KEY (Cno) REFERENCES course(Cno) \
+    ) \
 ";
 
 char sql_select_tb_student[] = "SELECT * FROM student";
@@ -83,3 +83,10 @@ char sql_grade_summary1[] =
     GROUP BY Sdept \
 ";
 
+char sql_grade_rank[] =
+"\
+    SELECT x.sno, sname, y.cno, cname, grade \
+    FROM student x, course y, grade z \
+    WHERE x.sdept=? AND x.sno=z.sno AND y.cno=z.cno \
+    ORDER BY grade DESC \
+";

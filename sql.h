@@ -30,4 +30,6 @@ extern char sql_stu_info2[];
 
 extern char sql_grade_summary1[];
 
+extern char sql_grade_rank[];
+
 #endif // SQL_H

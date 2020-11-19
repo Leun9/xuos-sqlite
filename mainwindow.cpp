@@ -52,6 +52,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->tbwStuInfo1->setHorizontalHeaderLabels(qstrListSInfo1);
     ui->tbwStuInfo1->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     ui->tbwStuInfo1->horizontalHeader()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
+    ui->tbwStuInfo1->verticalHeader()->hide();
     QStringList qstrListSInfo2({"课程号", "课程名", "先行课程", "学分", "成绩"});
     ui->tbwStuInfo2->setColumnCount(5);
     ui->tbwStuInfo2->setHorizontalHeaderLabels(qstrListSInfo2);
@@ -64,10 +65,17 @@ MainWindow::MainWindow(QWidget *parent)
     ui->tbwSum1->setRowCount(1);
     ui->tbwSum1->setHorizontalHeaderLabels(qstrListSum);
     ui->tbwSum1->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui->tbwSum1->verticalHeader()->hide();
     //ui->tbwSum1->horizontalHeader()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
     ui->tbwSum2->setColumnCount(6);
     ui->tbwSum2->setHorizontalHeaderLabels(qstrListSum);
     ui->tbwSum2->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+
+    /*** tab Rank ***/
+    QStringList qstrListRank({"学号", "姓名", "课程号", "课程名", "分数"});
+    ui->tbwRank->setColumnCount(5);
+    ui->tbwRank->setHorizontalHeaderLabels(qstrListRank);
+    ui->tbwRank->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
     /* 显示信息 */
     DisplayStudents();
@@ -461,4 +469,37 @@ int MainWindow::GetDepSummary() {
 void MainWindow::on_btnSum_clicked()
 {
     GetDepSummary();
+}
+
+int MainWindow::GetDepRank() {
+    if (ui->leRank->text().isEmpty()) QUERY_ERR_RET("系别为空", 1);
+    int found = -1;
+    for (int i = 0; i < ui->tbwSum2->rowCount(); ++i) {
+        if (ui->leRank->text() == ui->tbwSum2->item(i, 0)->text()) {
+            found = i;
+            break;
+        }
+    }
+    if (found == -1) {
+        QMessageBox::information(this, "信息", "系别不存在");
+        return 0;
+    }
+    QSqlQuery sql_query(sql_grade_rank);
+    sql_query.addBindValue(ui->leRank->text());
+    if (!sql_query.exec()) QUERY_ERR_RET(sql_query.lastError().text(), 1);
+    ui->tbwRank->setRowCount(0);
+    int row = 0;
+    while (sql_query.next()) {
+        ui->tbwRank->insertRow(row);
+        for (int i = 0; i < 5; ++i)
+            ui->tbwRank->setItem(row, i, new QTableWidgetItem(sql_query.value(i).toString()));
+        row++;
+    }
+
+    return 0;
+}
+
+void MainWindow::on_btnRank_clicked()
+{
+    GetDepRank();
 }

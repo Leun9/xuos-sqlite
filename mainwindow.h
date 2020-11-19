@@ -33,8 +33,9 @@ private slots:
     void on_btnGrdUpd_clicked();
     void on_btnGrdDel_clicked();
     void on_btnStuInfo_clicked();
-
     void on_btnSum_clicked();
+
+    void on_btnRank_clicked();
 
 private:
     Ui::MainWindow *ui;
@@ -56,6 +57,7 @@ private:
     int GetStuInfo();
     int DisplaySummarys();
     int GetDepSummary();
+    int GetDepRank();
 };
 
 #endif // MAINWINDOW_H
