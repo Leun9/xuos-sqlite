@@ -37,6 +37,8 @@ private slots:
 
     void on_btnRank_clicked();
 
+    void on_btnCouAutoDel_clicked();
+
 private:
     Ui::MainWindow *ui;
     QSqlDatabase database_;
@@ -49,6 +51,7 @@ private:
     int DisplayCourses();
     int InsertCourse();
     int DeleteCourse();
+    int DeleteUselessCourse();
     int UpdateCourse();
     int DisplayGrades();
     int InsertGrade();

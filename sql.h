@@ -32,4 +32,6 @@ extern char sql_grade_summary1[];
 
 extern char sql_grade_rank[];
 
+extern char sql_delete_useless_course[];
+
 #endif // SQL_H

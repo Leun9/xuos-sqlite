@@ -6,7 +6,7 @@ char sql_passwd[] = "default";
 
 char sql_create_tb_student[] =
 "\
-    CREATE TABLE student( \
+    CREATE TABLE IF NOT EXISTS student( \
         Sno TEXT PRIMARY KEY NOT NULL, \
         Sname TEXT NOT NULL, \
         Ssex TEXT NOT NULL, \
@@ -18,7 +18,7 @@ char sql_create_tb_student[] =
 
 char sql_create_tb_course[] =
 "\
-    CREATE TABLE course ( \
+    CREATE TABLE IF NOT EXISTS course( \
         Cno TEXT PRIMARY KEY NOT NULL, \
         Cname TEXT NOT NULL, \
         Cpno TEXT, \
@@ -29,7 +29,7 @@ char sql_create_tb_course[] =
 
 char sql_create_tb_sc[] =
 "\
-    CREATE TABLE grade( \
+    CREATE TABLE IF NOT EXISTS grade( \
         Sno TEXT NOT NULL, \
         Cno TEXT NOT NULL, \
         Grade INT, \
@@ -90,3 +90,5 @@ char sql_grade_rank[] =
     WHERE x.sdept=? AND x.sno=z.sno AND y.cno=z.cno \
     ORDER BY grade DESC \
 ";
+
+char sql_delete_useless_course[] = "DELETE FROM course WHERE cno NOT IN (SELECT DISTINCT cno FROM grade)";

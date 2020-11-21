@@ -503,3 +503,16 @@ void MainWindow::on_btnRank_clicked()
 {
     GetDepRank();
 }
+
+int MainWindow::DeleteUselessCourse() {
+    QSqlQuery sql_query(sql_delete_useless_course);
+    if (!sql_query.exec()) DEL_ERR_RET("", 1);
+    DisplayCourses();
+    DisplaySummarys();
+    return 0;
+}
+
+void MainWindow::on_btnCouAutoDel_clicked()
+{
+    DeleteUselessCourse();
+}
