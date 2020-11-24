@@ -1,8 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#define XUOSDB this->database_
-
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -10,7 +8,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     if (InitDB() != 0)
     {
-        QMessageBox::warning(this, "错误", "初始化失败，错误信息：" + XUOSDB.lastError().text());
+        QMessageBox::warning(this, "错误", "初始化失败，错误信息："
+                             + this->database_.lastError().text());
         exit (1);
     }
 
@@ -20,8 +19,12 @@ MainWindow::MainWindow(QWidget *parent)
     QStringList qstrListStu({"学号", "姓名", "性别", "年龄", "院系", "奖学金"});
     ui->tbwStu->setColumnCount(6);
     ui->tbwStu->setHorizontalHeaderLabels(qstrListStu);
-    //ui->tbwStu->horizontalHeader()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
     ui->tbwStu->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui->tbwStu->horizontalHeader()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
+    ui->tbwStu->horizontalHeader()->setSectionResizeMode(2, QHeaderView::ResizeToContents);
+    ui->tbwStu->horizontalHeader()->setSectionResizeMode(3, QHeaderView::ResizeToContents);
+    ui->tbwStu->horizontalHeader()->setSectionResizeMode(4, QHeaderView::ResizeToContents);
+    ui->tbwStu->horizontalHeader()->setSectionResizeMode(5, QHeaderView::ResizeToContents);
     ui->leStuNum->setValidator(new QIntValidator());
     ui->leStuBd->setValidator(new QIntValidator());
     ui->leStuNumd->setValidator(new QIntValidator());
@@ -65,11 +68,12 @@ MainWindow::MainWindow(QWidget *parent)
     ui->tbwSum1->setRowCount(1);
     ui->tbwSum1->setHorizontalHeaderLabels(qstrListSum);
     ui->tbwSum1->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    //ui->tbwSum1->horizontalHeader()->setSectionResizeMode(5, QHeaderView::ResizeToContents);
     ui->tbwSum1->verticalHeader()->hide();
-    //ui->tbwSum1->horizontalHeader()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
     ui->tbwSum2->setColumnCount(6);
     ui->tbwSum2->setHorizontalHeaderLabels(qstrListSum);
     ui->tbwSum2->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    //ui->tbwSum1->horizontalHeader()->setSectionResizeMode(5, QHeaderView::ResizeToContents);
 
     /*** tab Rank ***/
     QStringList qstrListRank({"学号", "姓名", "课程号", "课程名", "分数"});
@@ -84,19 +88,19 @@ MainWindow::MainWindow(QWidget *parent)
     DisplaySummarys();
 }
 
+
 MainWindow::~MainWindow()
 {
     delete ui;
-    XUOSDB.close();
+    this->database_.close();
 }
 
-
 int MainWindow::InitDB() {
-    XUOSDB = QSqlDatabase::addDatabase("QSQLITE");
-    XUOSDB.setDatabaseName(".userdata");
-    //XUOSDB.setUserName(sql_username);
-    //XUOSDB.setPassword(sql_passwd);
-    if (!XUOSDB.open()) return 1;
+    this->database_ = QSqlDatabase::addDatabase("QSQLITE");
+    this->database_.setDatabaseName(".userdata");
+    //this->database_.setUserName(sql_username);
+    //this->database_.setPassword(sql_passwd);
+    if (!this->database_.open()) return 1;
     QSqlQuery sql_query;
     sql_query.exec(sql_open_foreign_key);
     sql_query.exec(sql_create_tb_student);
@@ -131,16 +135,16 @@ int MainWindow::DisplayStudents() {
 int MainWindow::InsertStudent() {
     QSqlQuery sql_query(sql_insert_student);
     if (ui->leStuNum->text().length() != 9) INS_ERR_RET("学号长度必须为9", 1);
-    sql_query.addBindValue(ui->leStuNum->text());
     if (ui->leStuName->text().isEmpty()) INS_ERR_RET("姓名不能为空", 1);
-    sql_query.addBindValue(ui->leStuName->text());
     if (ui->cbStuSex->currentText().isEmpty()) INS_ERR_RET("性别不能为空", 1);
-    sql_query.addBindValue(ui->cbStuSex->currentText());
     if (ui->leStuBd->text().isEmpty()) INS_ERR_RET("年龄不能为空", 1);
-    sql_query.addBindValue(ui->leStuBd->text());
     // 系别可以为空
-    sql_query.addBindValue(ui->leStuDep->text());
     if (ui->cbStuSch->currentText().isEmpty()) INS_ERR_RET("奖学金不能为空", 1);
+    sql_query.addBindValue(ui->leStuNum->text());
+    sql_query.addBindValue(ui->leStuName->text());
+    sql_query.addBindValue(ui->cbStuSex->currentText());
+    sql_query.addBindValue(ui->leStuBd->text());
+    sql_query.addBindValue(ui->leStuDep->text());
     sql_query.addBindValue(ui->cbStuSch->currentText());
     if(!sql_query.exec()) INS_ERR_RET(sql_query.lastError().text(), 1);
 
@@ -172,7 +176,6 @@ int MainWindow::DeleteStudent() {
     QSqlQuery sql_query(sql_delete_student);
     sql_query.addBindValue(ui->leStuNumd->text());
     if (!sql_query.exec()) DEL_ERR_RET(sql_query.lastError().text(), 1);
-    // TODO 状态栏显示是否发生删除
 
     ui->leStuNumd->clear();
     DisplayStudents();
@@ -194,16 +197,21 @@ void MainWindow::on_btnStuDel_clicked()
 int MainWindow::UpdateStudent() {
     if (ui->leStuNum->text().isEmpty()) UPD_ERR_RET("学号为空", 1);
     QString qstr;
-    if (!ui->leStuName->text().isEmpty()) qstr += "Sname=" + PAD_SINGLE_QUOTES(ui->leStuName->text()) + ",";
-    if (!ui->cbStuSex->currentText().isEmpty()) qstr += "Ssex=" + PAD_SINGLE_QUOTES(ui->cbStuSex->currentText()) + ",";
-    if (!ui->leStuBd->text().isEmpty()) qstr += "Sbd=" + ui->leStuBd->text() + ",";
-    if (!ui->leStuDep->text().isEmpty()) qstr += "Sdept=" + PAD_SINGLE_QUOTES(ui->leStuDep->text()) + ",";
-    if (!ui->cbStuSch->currentText().isEmpty()) qstr += "Scholarship=" + PAD_SINGLE_QUOTES(ui->cbStuSch->currentText()) + ",";
+    if (!ui->leStuName->text().isEmpty())
+        qstr += "Sname=" + PAD_SINGLE_QUOTES(ui->leStuName->text()) +",";
+    if (!ui->cbStuSex->currentText().isEmpty())
+        qstr += "Ssex=" + PAD_SINGLE_QUOTES(ui->cbStuSex->currentText()) +",";
+    if (!ui->leStuBd->text().isEmpty())
+        qstr += "Sbd=" + ui->leStuBd->text() +",";
+    if (!ui->leStuDep->text().isEmpty())
+        qstr += "Sdept=" + PAD_SINGLE_QUOTES(ui->leStuDep->text()) +",";
+    if (!ui->cbStuSch->currentText().isEmpty())
+        qstr += "Scholarship=" + PAD_SINGLE_QUOTES(ui->cbStuSch->currentText()) +",";
     if (qstr.isEmpty()) UPD_ERR_RET("无更新信息", 1);
+
     qstr = qstr.mid(0, qstr.length() - 1);
     QSqlQuery sql_query(QString(sql_update_student).arg(qstr).arg(ui->leStuNum->text()));
     if(!sql_query.exec()) UPD_ERR_RET(sql_query.lastError().text(), 1);
-    // TODO 状态栏显示是否发生修改
 
     ui->leStuNum->clear();
     ui->leStuName->clear();
@@ -261,7 +269,6 @@ int MainWindow::DeleteCourse() {
     QSqlQuery sql_query(sql_delete_course);
     sql_query.addBindValue(ui->leCouNumd->text());
     if (!sql_query.exec()) DEL_ERR_RET(sql_query.lastError().text(), 1);
-    // TODO 状态栏显示是否发生删除
 
     ui->leCouNumd->clear();
     DisplayCourses();
@@ -290,7 +297,6 @@ int MainWindow::UpdateCourse() {
     QSqlQuery sql_query(QString(sql_update_course).arg(qstr).arg(ui->leCouNum->text()));
     //qDebug() << QString(sql_update_course).arg(qstr).arg(ui->leCouNum->text());
     if(!sql_query.exec()) UPD_ERR_RET(sql_query.lastError().text(), 1);
-    // TODO 状态栏显示是否发生修改
 
     ui->leCouNum->clear();
     ui->leCouName->clear();
@@ -339,7 +345,6 @@ int MainWindow::InsertGrade() {
     return 0;
 }
 
-
 void MainWindow::on_btnGrdIns_clicked()
 {
     InsertGrade();
@@ -352,7 +357,6 @@ int MainWindow::DeleteGrade() {
     if (ui->leGrdCno->text().isEmpty()) DEL_ERR_RET("课程号不能为空", 1);
     sql_query.addBindValue(ui->leGrdCno->text());
     if (!sql_query.exec()) DEL_ERR_RET(sql_query.lastError().text(), 1);
-    // TODO 状态栏显示是否发生删除
 
     ui->leGrdSno->clear();
     ui->leGrdCno->clear();
@@ -370,7 +374,6 @@ int MainWindow::UpdateGrade() {
     sql_query.addBindValue(ui->leGrdSno->text());
     sql_query.addBindValue(ui->leGrdCno->text());
     if(!sql_query.exec()) UPD_ERR_RET(sql_query.lastError().text(), 1);
-    // TODO 状态栏显示是否发生修改
 
     ui->leGrdSno->clear();
     ui->leGrdCno->clear();
@@ -505,8 +508,13 @@ void MainWindow::on_btnRank_clicked()
 }
 
 int MainWindow::DeleteUselessCourse() {
-    QSqlQuery sql_query(sql_delete_useless_course);
-    if (!sql_query.exec()) DEL_ERR_RET("", 1);
+    QSqlQuery sql_query(sql_query_useless_course);
+    QSqlQuery sql_delete(sql_delete_useless_course);
+    while (true) {
+        if (!sql_query.exec()) DEL_ERR_RET("", 1);
+        if (!sql_query.next()) break;
+        if (!sql_delete.exec()) DEL_ERR_RET("", 1);
+    }
     DisplayCourses();
     DisplaySummarys();
     return 0;

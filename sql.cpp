@@ -15,7 +15,6 @@ char sql_create_tb_student[] =
         Scholarship TEXT NOT NULL\
     ) \
 ";
-
 char sql_create_tb_course[] =
 "\
     CREATE TABLE IF NOT EXISTS course( \
@@ -26,7 +25,6 @@ char sql_create_tb_course[] =
         FOREIGN KEY (Cpno) REFERENCES Course(Cno) \
     ) \
 ";
-
 char sql_create_tb_sc[] =
 "\
     CREATE TABLE IF NOT EXISTS grade( \
@@ -54,6 +52,21 @@ char sql_insert_course[] = "INSERT INTO course VALUES(?,?,?,?)";
 char sql_delete_course[] = "DELETE FROM course WHERE cno=?";
 
 char sql_update_course[] = "UPDATE course SET %1 WHERE cno=%2";
+
+char sql_query_useless_course[] =
+" \
+    SELECT cno FROM course \
+    WHERE cno NOT IN \
+        (SELECT DISTINCT cno FROM grade \
+        UNION SELECT DISTINCT cpno FROM course WHERE cpno IS NOT NULL) \
+";
+char sql_delete_useless_course[] =
+" \
+    DELETE FROM course \
+    WHERE cno NOT IN \
+        (SELECT DISTINCT cno FROM grade \
+        UNION SELECT DISTINCT cpno FROM course WHERE cpno IS NOT NULL) \
+";
 
 char sql_select_tb_grade[] = "SELECT * FROM grade";
 
@@ -91,4 +104,3 @@ char sql_grade_rank[] =
     ORDER BY grade DESC \
 ";
 
-char sql_delete_useless_course[] = "DELETE FROM course WHERE cno NOT IN (SELECT DISTINCT cno FROM grade)";
